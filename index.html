@@ -1,20 +1,28 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Habit Tracker</title>
+<title>My Habit Tracker</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- App Icon -->
+<link rel="icon" href="https://cdn-icons-png.flaticon.com/512/2920/2920277.png">
+<link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2920/2920277.png">
+
 <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
+
+<button id="themeBtn">🌙</button>
+
 <h1>Habit Tracker</h1>
 
 <div id="addBox">
   <input id="habitName" placeholder="Habit name">
   <select id="habitType">
-    <option value="daily">Daily (✔/❌)</option>
-    <option value="count">Count (numbers)</option>
+    <option value="daily">Daily</option>
+    <option value="count">Count</option>
   </select>
   <button onclick="addHabit()">Add</button>
 </div>
@@ -23,6 +31,13 @@
 
 <h2 id="dateTitle"></h2>
 <ul id="habitList"></ul>
+
+<!-- Diary -->
+<div id="diaryBox">
+  <h3>Daily Diary</h3>
+  <textarea id="diaryText" placeholder="Write about your day..."></textarea>
+  <button onclick="saveDiary()">Save</button>
+</div>
 
 <script src="script.js"></script>
 </body>
