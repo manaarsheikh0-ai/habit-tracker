@@ -10,6 +10,8 @@
 <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2920/2920277.png">
 
 <link rel="stylesheet" href="style.css">
+<link rel="manifest" href="manifest.json">
+
 </head>
 
 <body>
@@ -38,6 +40,12 @@
   <textarea id="diaryText" placeholder="Write about your day..."></textarea>
   <button onclick="saveDiary()">Save</button>
 </div>
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("sw.js");
+}
+</script>
+
 
 <script src="script.js"></script>
 </body>
