@@ -5,7 +5,7 @@ let data = JSON.parse(localStorage.getItem("habitData")) || {
 
 let selectedDate = new Date();
 
-const STATES = ["missed", "partial", "skip", "done"]; // 🔴 🟡 🔵 🟢
+const STATES = ["missed", "partial", "skip", "done"];
 const EMOJI = {
   missed: "🔴",
   partial: "🟡",
@@ -18,7 +18,7 @@ function save() {
 }
 
 function formatDate(d) {
-  return d.toISOString().slice(0,10);
+  return d.toISOString().slice(0, 10);
 }
 
 function addHabit() {
@@ -26,9 +26,9 @@ function addHabit() {
   const type = document.getElementById("habitType").value;
   if (!name) return;
 
-  let goal = 1;
+  let goal = null;
   if (type === "count") {
-    goal = parseInt(prompt("Enter daily goal (e.g. 8 glasses)")) || 1;
+    goal = parseInt(prompt("Enter daily goal (example: 8)")) || 1;
   }
 
   data.habits.push({
@@ -57,10 +57,9 @@ function getDay(date) {
 function cycleState(id) {
   const d = formatDate(selectedDate);
   const day = getDay(d);
-  let current = day[id] || "missed";
-  let idx = STATES.indexOf(current);
-  idx = (idx + 1) % STATES.length;
-  day[id] = STATES[idx];
+  const current = day[id] || "missed";
+  const idx = STATES.indexOf(current);
+  day[id] = STATES[(idx + 1) % STATES.length];
   save();
   render();
 }
@@ -68,28 +67,33 @@ function cycleState(id) {
 function incHabit(id) {
   const d = formatDate(selectedDate);
   const day = getDay(d);
-  day[id] = (day[id] || 0) + 1;
+  day[id] = (typeof day[id] === "number" ? day[id] : 0) + 1;
   save();
   render();
 }
 
 function getState(habit, date) {
   const day = getDay(date);
+
   if (habit.type === "daily") {
-    return day[habit.id];
-  } else {
-    if (day[habit.id] >= habit.goal) return "done";
-    if (day[habit.id] > 0) return "partial";
-    return "missed";
+    return day[habit.id] || "missed";
   }
+
+  const count = typeof day[habit.id] === "number" ? day[habit.id] : 0;
+
+  if (count >= habit.goal) return "done";
+  if (count > 0) return "partial";
+  return "missed";
 }
 
 function calcStreak(habit) {
   let streak = 0;
   let d = new Date();
+
   while (true) {
     const date = formatDate(d);
     const state = getState(habit, date);
+
     if (state === "done") {
       streak++;
     } else if (state === "partial" || state === "skip") {
@@ -99,6 +103,7 @@ function calcStreak(habit) {
     }
     d.setDate(d.getDate() - 1);
   }
+
   return streak;
 }
 
@@ -120,6 +125,7 @@ function renderCalendar() {
   const grid = document.createElement("div");
   grid.style.display = "grid";
   grid.style.gridTemplateColumns = "repeat(7, 1fr)";
+  grid.style.gap = "6px";
 
   for (let i = 0; i < firstDay; i++) grid.appendChild(document.createElement("div"));
 
@@ -129,15 +135,22 @@ function renderCalendar() {
     const btn = document.createElement("button");
     btn.innerText = d;
 
-    let score = 0;
     if (data.history[key]) {
+      let hasDone = false;
+      let hasPartial = false;
+      let hasMissed = false;
+
       data.habits.forEach(h => {
         const s = getState(h, key);
-        if (s === "done") score++;
+        if (s === "done") hasDone = true;
+        if (s === "partial" || s === "skip") hasPartial = true;
+        if (s === "missed") hasMissed = true;
       });
-    }
 
-    if (score > 0) btn.style.background = "#4caf50";
+      if (hasDone) btn.style.background = "#4caf50";
+      else if (hasPartial) btn.style.background = "#f1c40f";
+      else if (hasMissed) btn.style.background = "#c0392b";
+    }
 
     if (formatDate(date) === formatDate(new Date())) {
       btn.style.border = "2px solid yellow";
@@ -160,24 +173,22 @@ function renderHabits() {
 
   const dateStr = formatDate(selectedDate);
   document.getElementById("dateTitle").innerText = dateStr;
-
   const day = getDay(dateStr);
 
   data.habits.forEach(h => {
     const li = document.createElement("li");
+    const state = getState(h, dateStr);
     const streak = calcStreak(h);
 
     if (h.type === "daily") {
-      const state = day[h.id];
       li.innerHTML = `
-        ${h.name} ${EMOJI[state]} 🔥${streak}
+        ${h.name} ${EMOJI[state]} <span style="color:orange">🔥${streak}</span>
         <button onclick="cycleState(${h.id})">Change</button>
       `;
     } else {
-      const count = day[h.id] || 0;
-      const state = getState(h, dateStr);
+      const count = typeof day[h.id] === "number" ? day[h.id] : 0;
       li.innerHTML = `
-        ${h.name} (${count}/${h.goal}) ${EMOJI[state]} 🔥${streak}
+        ${h.name} (${count}/${h.goal}) ${EMOJI[state]} <span style="color:orange">🔥${streak}</span>
         <button onclick="incHabit(${h.id})">+</button>
       `;
     }
