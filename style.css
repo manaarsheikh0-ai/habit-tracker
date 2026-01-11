@@ -1,37 +1,130 @@
+:root {
+  --bg-dark: #0f172a;
+  --bg-light: #f8fafc;
+  --card-dark: #020617;
+  --card-light: #ffffff;
+  --text-dark: #e5e7eb;
+  --text-light: #020617;
+  --green: #22c55e;
+  --yellow: #facc15;
+  --blue: #38bdf8;
+  --red: #ef4444;
+}
+
 body {
-  font-family: Arial, sans-serif;
   margin: 0;
-  padding: 15px;
-  background: #121212;
-  color: white;
+  padding: 20px;
+  background: radial-gradient(circle at top, #020617, #000);
+  color: var(--text-dark);
+  font-family: system-ui, sans-serif;
+}
+
+body.light {
+  background: var(--bg-light);
+  color: var(--text-light);
 }
 
 h1 {
   text-align: center;
+  margin-bottom: 15px;
 }
 
-#app {
-  max-width: 500px;
-  margin: auto;
+#themeBtn {
+  position: fixed;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 24px;
 }
 
-input, button {
-  padding: 10px;
-  margin: 5px;
-  width: 70%;
+#addBox {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+input, select {
+  flex: 1;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #334155;
+  background: #020617;
+  color: white;
+}
+
+body.light input, body.light select {
+  background: white;
+  color: black;
 }
 
 button {
-  background: #4caf50;
-  color: white;
+  padding: 12px;
+  border-radius: 10px;
   border: none;
+  background: var(--green);
+  font-weight: bold;
 }
 
-li {
-  list-style: none;
+#calendar {
+  margin: 15px 0;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7,1fr);
+  gap: 6px;
+}
+
+.day {
   padding: 10px;
-  background: #1e1e1e;
-  margin-top: 5px;
-  display: flex;
-  justify-content: space-between;
+  border-radius: 10px;
+  text-align: center;
+  background: #020617;
+  color: white;
+}
+
+.day.green { background: var(--green); }
+.day.yellow { background: var(--yellow); color: black; }
+.day.blue { background: var(--blue); color: black; }
+.day.red { background: var(--red); }
+
+body.light .day {
+  background: white;
+  color: black;
+}
+
+.habit {
+  background: #020617;
+  margin-bottom: 10px;
+  padding: 12px;
+  border-radius: 12px;
+}
+
+body.light .habit {
+  background: white;
+}
+
+.progress {
+  height: 6px;
+  background: #334155;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-top: 6px;
+}
+
+.progress-inner {
+  height: 100%;
+  background: var(--green);
+}
+
+#diaryBox {
+  margin-top: 20px;
+}
+
+textarea {
+  width: 100%;
+  min-height: 80px;
+  padding: 10px;
+  border-radius: 10px;
 }
