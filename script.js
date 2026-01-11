@@ -17,13 +17,8 @@ function save() {
   localStorage.setItem("habitData", JSON.stringify(data));
 }
 
-/* FIXED LOCAL DATE */
 function formatDate(d) {
-  return (
-    d.getFullYear() + "-" +
-    String(d.getMonth() + 1).padStart(2, "0") + "-" +
-    String(d.getDate()).padStart(2, "0")
-  );
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
 }
 
 /* THEME */
@@ -38,26 +33,31 @@ themeBtn.onclick = () => {
 function addHabit() {
   const name = habitName.value;
   const type = habitType.value;
+  const goal = parseInt(habitGoal.value) || 30;
+  const reminder = reminderTime.value;
+
   if (!name) return;
 
-  let goalStreak = parseInt(prompt("Streak goal (e.g. 7)")) || 7;
-  let goalTotal = parseInt(prompt("Total success days goal (e.g. 30)")) || 30;
   let countGoal = null;
-
   if (type === "count") {
-    countGoal = parseInt(prompt("Daily count goal (e.g. 8)")) || 1;
+    countGoal = parseInt(prompt("Daily target (e.g. 8)")) || 1;
   }
 
   data.habits.push({
     id: Date.now(),
     name,
     type,
-    goalStreak,
-    goalTotal,
-    countGoal
+    goalTotal: goal,
+    goalStreak: 7,
+    countGoal,
+    reminder
   });
 
+  if (reminder) scheduleReminder(name, reminder);
+
   habitName.value = "";
+  habitGoal.value = "";
+  reminderTime.value = "";
   save();
   render();
 }
@@ -65,7 +65,7 @@ function addHabit() {
 function getDay(date) {
   if (!data.history[date]) {
     data.history[date] = {};
-    data.habits.forEach(h=>{
+    data.habits.forEach(h => {
       data.history[date][h.id] = h.type==="daily" ? "missed" : 0;
     });
   }
@@ -119,7 +119,7 @@ function calcTotal(h){
 
 /* CALENDAR */
 function renderCalendar(){
-  const cal=document.getElementById("calendar");
+  const cal=calendar;
   cal.innerHTML="";
   const now=new Date(selectedDate); now.setDate(1);
   const m=now.getMonth(), y=now.getFullYear();
@@ -154,10 +154,9 @@ function renderCalendar(){
   cal.appendChild(grid);
 }
 
-/* HABIT LIST */
+/* HABITS */
 function renderHabits(){
-  const list=document.getElementById("habitList");
-  list.innerHTML="";
+  habitList.innerHTML="";
   const date=formatDate(selectedDate);
   dateTitle.innerText=date;
 
@@ -165,15 +164,16 @@ function renderHabits(){
     const st=getState(h,date);
     const streak=calcStreak(h);
     const total=calcTotal(h);
+
     const div=document.createElement("div");
     div.className="habit";
     div.innerHTML=`
       <b>${h.name}</b> ${EMOJI[st]}
-      <div class="sub">🔥 ${streak}/${h.goalStreak} | ✔ ${total}/${h.goalTotal}</div>
+      <div>🔥 ${streak}/7 | ✔ ${total}/${h.goalTotal}</div>
       <div class="progress"><div class="progress-inner" style="width:${Math.min(100,(total/h.goalTotal)*100)}%"></div></div>
       ${h.type==="daily"?`<button onclick="cycleState(${h.id})">Change</button>`:`<button onclick="incHabit(${h.id})">+</button>`}
     `;
-    list.appendChild(div);
+    habitList.appendChild(div);
   });
 }
 
@@ -187,7 +187,26 @@ function loadDiary(){
   diaryText.value = data.diary[formatDate(selectedDate)] || "";
 }
 
-/* RENDER */
+/* NOTIFICATIONS */
+function scheduleReminder(title, timeStr){
+  const [h,m] = timeStr.split(":");
+  const now = new Date();
+  const remind = new Date();
+  remind.setHours(h,m,0,0);
+  if(remind < now) remind.setDate(remind.getDate()+1);
+
+  if("serviceWorker" in navigator){
+    navigator.serviceWorker.ready.then(reg=>{
+      reg.active.postMessage({
+        type:"schedule",
+        title:"⏰ "+title,
+        body:"Time to do your habit!",
+        time:remind.getTime()
+      });
+    });
+  }
+}
+
 function render(){
   renderCalendar();
   renderHabits();
