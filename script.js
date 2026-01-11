@@ -5,6 +5,7 @@ let data = JSON.parse(localStorage.getItem("habitData")) || {
 };
 
 let selectedDate = new Date();
+
 const STATES = ["missed", "partial", "skip", "done"];
 const EMOJI = { missed:"🔴", partial:"🟡", skip:"🔵", done:"🟢" };
 
@@ -12,8 +13,13 @@ function save() {
   localStorage.setItem("habitData", JSON.stringify(data));
 }
 
+/* FIXED LOCAL DATE */
 function formatDate(d) {
-  return d.toISOString().slice(0,10);
+  return (
+    d.getFullYear() + "-" +
+    String(d.getMonth() + 1).padStart(2, "0") + "-" +
+    String(d.getDate()).padStart(2, "0")
+  );
 }
 
 /* THEME */
@@ -160,7 +166,7 @@ function renderHabits(){
     div.innerHTML=`
       <b>${h.name}</b> ${EMOJI[st]}
       <div class="sub">🔥 ${streak}/${h.goalStreak} | ✔ ${total}/${h.goalTotal}</div>
-      <div class="progress"><div class="progress-inner" style="width:${(total/h.goalTotal)*100}%"></div></div>
+      <div class="progress"><div class="progress-inner" style="width:${Math.min(100,(total/h.goalTotal)*100)}%"></div></div>
       ${h.type==="daily"?`<button onclick="cycleState(${h.id})">Change</button>`:`<button onclick="incHabit(${h.id})">+</button>`}
     `;
     list.appendChild(div);
