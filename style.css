@@ -17,6 +17,7 @@ body{
   background:radial-gradient(circle at top,#020617,#000);
   color:var(--text-dark);
   font-family:system-ui;
+  transition:.3s;
 }
 
 body.light{
@@ -31,6 +32,7 @@ body.light{
   background:none;
   border:none;
   font-size:24px;
+  cursor:pointer;
 }
 
 h1{text-align:center;}
@@ -50,19 +52,22 @@ input,select{
   color:white;
 }
 
-body.light input,body.light select{
+body.light input,
+body.light select{
   background:white;
   color:black;
 }
 
 button{
-  padding:10px;
+  padding:10px 14px;
   border-radius:10px;
   border:none;
   background:var(--green);
   font-weight:bold;
+  cursor:pointer;
 }
 
+/* CALENDAR */
 #calendar{
   margin:10px 0;
 }
@@ -73,27 +78,49 @@ button{
   gap:6px;
 }
 
+/* FIXED DAY BOX */
 .day{
-  padding:10px;
-  border-radius:10px;
+  padding:12px;
+  border-radius:12px;
   text-align:center;
-  background:#020617;
+  font-weight:600;
+  cursor:pointer;
+  background:var(--card-dark);
+  color:var(--text-dark);
+  box-shadow:0 0 0 1px rgba(255,255,255,0.05);
+  transition:.25s;
+}
+.day:hover{
+  transform:scale(1.05);
 }
 
-.day.green{background:var(--green);}
-.day.yellow{background:var(--yellow);color:black;}
-.day.blue{background:var(--blue);color:black;}
-.day.red{background:var(--red);}
+/* LIGHT MODE DAYS */
+body.light .day{
+  background:var(--card-light);
+  color:var(--text-light);
+  box-shadow:0 0 0 1px rgba(0,0,0,0.1);
+}
 
+/* STATUS COLORS */
+.day.green{background:var(--green);color:#052e16;}
+.day.yellow{background:var(--yellow);color:#422006;}
+.day.blue{background:var(--blue);color:#082f49;}
+.day.red{background:var(--red);color:#450a0a;}
+
+/* HABITS */
 .habit{
-  background:#020617;
+  background:var(--card-dark);
   margin-bottom:10px;
   padding:12px;
   border-radius:12px;
+  box-shadow:0 0 10px rgba(34,197,94,0.1);
 }
 
-body.light .habit{background:white;}
+body.light .habit{
+  background:var(--card-light);
+}
 
+/* PROGRESS */
 .progress{
   height:6px;
   background:#334155;
@@ -106,6 +133,7 @@ body.light .habit{background:white;}
   background:var(--green);
 }
 
+/* DIARY */
 #diaryBox{
   margin-top:20px;
 }
@@ -115,4 +143,12 @@ textarea{
   min-height:80px;
   padding:10px;
   border-radius:10px;
+  border:1px solid #334155;
+  background:#020617;
+  color:white;
+}
+
+body.light textarea{
+  background:white;
+  color:black;
 }
