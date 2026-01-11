@@ -1,3 +1,7 @@
+if ("Notification" in window) {
+  Notification.requestPermission();
+}
+
 let data = JSON.parse(localStorage.getItem("habitData")) || {
   habits: [],
   history: {},
