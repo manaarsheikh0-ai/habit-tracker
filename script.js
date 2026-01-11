@@ -3,10 +3,14 @@ let data = JSON.parse(localStorage.getItem("habitData")) || {
   history: {}
 };
 
-let selectedDate = new Date().toISOString().slice(0,10);
+let selectedDate = new Date();
 
 function save() {
   localStorage.setItem("habitData", JSON.stringify(data));
+}
+
+function formatDate(d) {
+  return d.toISOString().slice(0,10);
 }
 
 function addHabit() {
@@ -18,7 +22,7 @@ function addHabit() {
     id: Date.now(),
     name,
     type,
-    created: new Date().toISOString().slice(0,10)
+    created: formatDate(new Date())
   });
 
   document.getElementById("habitName").value = "";
@@ -37,30 +41,79 @@ function getDay(date) {
 }
 
 function toggleHabit(id) {
-  const day = getDay(selectedDate);
+  const d = formatDate(selectedDate);
+  const day = getDay(d);
   day[id] = !day[id];
   save();
   render();
 }
 
 function incHabit(id) {
-  const day = getDay(selectedDate);
+  const d = formatDate(selectedDate);
+  const day = getDay(d);
   day[id]++;
   save();
   render();
 }
 
-function render() {
-  renderCalendar();
-  renderHabits();
+function renderCalendar() {
+  const cal = document.getElementById("calendar");
+  cal.innerHTML = "";
+
+  const now = new Date(selectedDate);
+  now.setDate(1);
+
+  const month = now.getMonth();
+  const year = now.getFullYear();
+  const firstDay = new Date(year, month, 1).getDay(); // Sunday=0
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  const title = document.createElement("h2");
+  title.innerText = now.toLocaleString("default", { month: "long", year: "numeric" });
+  cal.appendChild(title);
+
+  const grid = document.createElement("div");
+  grid.style.display = "grid";
+  grid.style.gridTemplateColumns = "repeat(7, 1fr)";
+  grid.style.gap = "5px";
+
+  for (let i = 0; i < firstDay; i++) {
+    grid.appendChild(document.createElement("div"));
+  }
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const date = new Date(year, month, d);
+    const key = formatDate(date);
+    const btn = document.createElement("button");
+    btn.innerText = d;
+
+    if (formatDate(date) === formatDate(new Date())) {
+      btn.style.border = "2px solid yellow";
+    }
+
+    if (data.history[key]) {
+      btn.style.background = "#4caf50";
+    }
+
+    btn.onclick = () => {
+      selectedDate = date;
+      render();
+    };
+
+    grid.appendChild(btn);
+  }
+
+  cal.appendChild(grid);
 }
 
 function renderHabits() {
   const list = document.getElementById("habitList");
   list.innerHTML = "";
-  document.getElementById("dateTitle").innerText = selectedDate;
 
-  const day = getDay(selectedDate);
+  const dateStr = formatDate(selectedDate);
+  document.getElementById("dateTitle").innerText = dateStr;
+
+  const day = getDay(dateStr);
 
   data.habits.forEach(h => {
     const li = document.createElement("li");
@@ -81,24 +134,9 @@ function renderHabits() {
   });
 }
 
-function renderCalendar() {
-  const cal = document.getElementById("calendar");
-  cal.innerHTML = "";
-
-  for (let i = 0; i < 30; i++) {
-    const d = new Date();
-    d.setDate(d.getDate() - i);
-    const date = d.toISOString().slice(0,10);
-
-    const btn = document.createElement("button");
-    btn.innerText = date;
-    btn.onclick = () => {
-      selectedDate = date;
-      render();
-    };
-
-    cal.appendChild(btn);
-  }
+function render() {
+  renderCalendar();
+  renderHabits();
 }
 
 render();
