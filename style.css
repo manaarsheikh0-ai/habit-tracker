@@ -1,0 +1,37 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 15px;
+  background: #121212;
+  color: white;
+}
+
+h1 {
+  text-align: center;
+}
+
+#app {
+  max-width: 500px;
+  margin: auto;
+}
+
+input, button {
+  padding: 10px;
+  margin: 5px;
+  width: 70%;
+}
+
+button {
+  background: #4caf50;
+  color: white;
+  border: none;
+}
+
+li {
+  list-style: none;
+  padding: 10px;
+  background: #1e1e1e;
+  margin-top: 5px;
+  display: flex;
+  justify-content: space-between;
+}
