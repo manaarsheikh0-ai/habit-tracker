@@ -9,9 +9,8 @@
 <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/2920/2920277.png">
 <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2920/2920277.png">
 
-<link rel="stylesheet" href="style.css">
 <link rel="manifest" href="manifest.json">
-
+<link rel="stylesheet" href="style.css">
 </head>
 
 <body>
@@ -26,6 +25,8 @@
     <option value="daily">Daily</option>
     <option value="count">Count</option>
   </select>
+  <input id="habitGoal" type="number" placeholder="Goal (optional)">
+  <input id="reminderTime" type="time">
   <button onclick="addHabit()">Add</button>
 </div>
 
@@ -38,14 +39,14 @@
 <div id="diaryBox">
   <h3>Daily Diary</h3>
   <textarea id="diaryText" placeholder="Write about your day..."></textarea>
-  <button onclick="saveDiary()">Save</button>
+  <button onclick="saveDiary()">Save Entry</button>
 </div>
+
 <script>
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("sw.js");
 }
 </script>
-
 
 <script src="script.js"></script>
 </body>
